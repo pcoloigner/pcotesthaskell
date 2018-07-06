@@ -1,0 +1,2 @@
+#!/bin/bash
+PORT=8080 stack runghc app/Main.hs
