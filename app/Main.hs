@@ -29,5 +29,5 @@ indexHandler = do
     env <- liftIO getEnvironment
     writeText "<ul>"
     for_ env $ \(k, v) ->
-        writeText $ Text.pack ("<li>" ++ k ++ "=" ++ v ++ "</li>")
+        writeText $ Text.pack ("<li> yeah ! " ++ k ++ "=" ++ v ++ "</li>")
     writeText "</ul>"
