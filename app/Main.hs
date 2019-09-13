@@ -25,7 +25,7 @@ site = ifTop indexHandler
 indexHandler :: Snap ()
 indexHandler = do
     modifyResponse $ setHeader "Content-Type" "text/html"
-    writeText "<p>Hello from Haskell!</p>"
+    writeText "<p>Hello from Haskell! and Philippe !</p>"
     env <- liftIO getEnvironment
     writeText "<ul>"
     for_ env $ \(k, v) ->
