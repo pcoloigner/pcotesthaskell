@@ -1,33 +1,34 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Control.Monad.IO.Class (liftIO)
-import           Data.Foldable (for_)
-import qualified Data.Text as Text (pack)
-import           System.Environment (getEnv, getEnvironment)
-import           Snap.Core
-                    ( Snap
-                    , ifTop
-                    , modifyResponse
-                    , setHeader
-                    , writeText
-                    )
-import           Snap.Http.Server (httpServe, setPort)
+import qualified Data.Text as T
+import qualified Data.Text.Lazy as L
+import System.Environment (getEnv)
+import Web.Scotty (get, html, scotty)
+
+import Control.Monad.Trans (liftIO)
+import qualified Data.ByteString.Char8 as B8
+import qualified Database.PostgreSQL.Simple as P
+
+type DbTitle = (T.Text, T.Text)
+
+formatTitles :: [DbTitle] -> T.Text
+formatTitles = T.intercalate "<br/>\n" . map (\ (a, t) -> T.concat [a, " - ", t]) 
+
+getMusic :: String -> IO T.Text
+getMusic params = do
+    conn <- P.connectPostgreSQL $ B8.pack params
+    titles <- P.query_ conn "SELECT artists.name, titles.name FROM artists \
+                            \ INNER JOIN titles ON artists.id = titles.artist" :: IO [DbTitle]
+    P.close conn
+    return $ formatTitles titles
 
 main :: IO ()
 main = do
-    port <- read <$> getEnv "PORT"
-    let config = setPort port mempty
-    httpServe config site
+    dbParams <- getEnv "DATABASE_URL"
+    portStr <- getEnv "PORT"
+    let port = read portStr
 
-site :: Snap ()
-site = ifTop indexHandler
-
-indexHandler :: Snap ()
-indexHandler = do
-    modifyResponse $ setHeader "Content-Type" "text/html"
-    writeText "<p>Hello from Haskell! and Philippe !</p>"
-    env <- liftIO getEnvironment
-    writeText "<ul>"
-    for_ env $ \(k, v) ->
-        writeText $ Text.pack ("<li> yeah ! " ++ k ++ "=" ++ v ++ "</li>")
-    writeText "</ul>"
+    scotty port $ do
+        get "/" $ do
+            music <- liftIO $ getMusic dbParams
+            html $ L.fromStrict $ music
