@@ -1,21 +1,8 @@
-# rcookhaskell
+# pcotesthaskell
 
 My first Haskell app on Heroku!
 
-## Clone, build and run locally
 
-```
-git clone https://github.com/rcook/rcookhaskell.git
-stack build --fast
-PORT=8000 stack exec rcookhaskell
-```
-
-## Deploy to Heroku
-
-I followed these two references:
-
-* ["For All the World to See: Deploying Haskell with Heroku"][for-all-the-world] by James Bowen
-* [heroku-buildpack-stack][heroku-buildpack-stack] by Mark Fine
 
 ## Licence
 
