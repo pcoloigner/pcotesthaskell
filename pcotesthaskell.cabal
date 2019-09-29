@@ -1,13 +1,8 @@
 
 name:                                       pcotesthaskell
 version:                                    0.1.0.0
-homepage:                                   
 license:                                    MIT
 license-file:                               LICENSE
-author:                                     
-maintainer:                                 
-copyright:                                  
-category:                                   Command Line
 build-type:                                 Simple
 cabal-version:                              >= 1.10
 extra-source-files:                         README.md
@@ -15,6 +10,13 @@ extra-source-files:                         README.md
 source-repository head
   type:                                     git
   location:                                 
+
+library
+  hs-source-dirs:     src
+  exposed-modules:    Model, View
+  default-language:   Haskell2010
+  build-depends:      base, lucid, mtl, scotty, postgresql-simple, 
+                      text, wai-extra, bytestring
 
 executable pcotesthaskell
   default-language:                         Haskell2010
@@ -28,9 +30,12 @@ executable pcotesthaskell
                                             -Werror=incomplete-patterns
                                             -Werror=missing-methods
                                             -fwarn-unused-imports
-  build-depends:                            base >= 4.7 && < 5
+  build-depends:                          pcotesthaskell  
+                                          , base >= 4.7 && < 5
                                           , bytestring
                                           , mtl
                                           , postgresql-simple 
                                           , scotty
                                           , text
+                                          , lucid
+                                          , wai-extra
