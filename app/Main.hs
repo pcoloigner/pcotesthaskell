@@ -7,6 +7,8 @@ import Control.Monad.Trans (liftIO)
 
 import qualified Model
 import qualified View
+import qualified ModelVolley
+
 
 -- SET DATABASE_URL=postgresql://postgres:baohan@localhost:5432/postgres
 
@@ -29,3 +31,11 @@ main = do
         body <- param "body"
         liftIO $ Model.insertMessage dbParams  ( Model.Message author title body )
         redirect "/"
+
+      --get "/equipes" $ do
+      -- equipes <- liftIO  $ ModelVolley.selectEquipes dbParams 
+      --  html $ View.equipesRoute equipes
+
+      get "/tournois" $ do
+        tournois <- liftIO  $ ModelVolley.selectTournois dbParams 
+        html $ View.tournoiRoute tournois

@@ -3,6 +3,7 @@
 module View 
     ( homeRoute
     , writeRoute
+    , tournoiRoute
     ) where
 
 import qualified Data.Text as T
@@ -10,6 +11,8 @@ import qualified Data.Text.Lazy as L
 import           Lucid
 
 import qualified Model
+import qualified ModelVolley
+
 
 homeRoute :: [Model.Message] -> L.Text
 homeRoute messages = renderText $ do
@@ -39,3 +42,17 @@ writeRoute = renderText $ do
     form_ [action_ "/", method_ "get"] $ 
       input_ [type_ "submit", value_ "Annuler"]
 
+
+tournoiRoute :: [ModelVolley.Tournoi] -> L.Text
+tournoiRoute tournois = renderText $ do
+  doctype_
+  html_ $ body_ $ do
+      h1_ "Mon programme de tournoi de volleyblog sur Haskell"
+      mapM_ formatTournoi tournois
+      --a_ [href_ "write"] "Écrire un message..."
+  where formatTournoi :: ModelVolley.Tournoi -> Html ()
+        formatTournoi tournoi = div_ $ do
+          strong_ $ toHtml $ ModelVolley.libelle tournoi
+          toHtml $ T.concat [ " par ", ModelVolley.categorie tournoi ]
+          div_ $ toHtml $ ModelVolley.date tournoi
+          br_ []

@@ -15,6 +15,7 @@ data Message = Message
   , body   :: T.Text
   }
 
+
 instance FromRow Message where
   fromRow = Message <$> field <*> field <*> field
 
