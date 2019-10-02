@@ -17,12 +17,13 @@ instance FromRow Tournoi where
   fromRow = Tournoi <$> field <*> field <*> field
 
 data Equipe = Equipe
-  { idTournoi :: Int 
+  { id :: Int
+  ,  idTournoi :: Int 
   , nom       :: T.Text
   }
 
 instance FromRow Equipe where
-  fromRow = Equipe <$> field <*> field 
+  fromRow = Equipe <$> field <*> field <*> field 
 
 
 selectTournois :: String -> IO [Tournoi] 
@@ -42,7 +43,7 @@ insertTournoi params trn = do
 selectEquipes :: String -> IO [Equipe] 
 selectEquipes params = do
   conn <- P.connectPostgreSQL $ B8.pack params
-  equipes <- P.query_ conn "SELECT id_tournoi,nom FROM equipe" :: IO [Equipe]
+  equipes <- P.query_ conn "SELECT id, id_tournoi,nom FROM equipe" :: IO [Equipe]
   P.close conn
   return equipes 
 

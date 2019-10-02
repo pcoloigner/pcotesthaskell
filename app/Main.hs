@@ -32,9 +32,9 @@ main = do
         liftIO $ Model.insertMessage dbParams  ( Model.Message author title body )
         redirect "/"
 
-      --get "/equipes" $ do
-      -- equipes <- liftIO  $ ModelVolley.selectEquipes dbParams 
-      --  html $ View.equipesRoute equipes
+      get "/equipes" $ do
+        equipes <- liftIO  $ ModelVolley.selectEquipes dbParams 
+        html $ View.equipeRoute equipes
 
       get "/tournois" $ do
         tournois <- liftIO  $ ModelVolley.selectTournois dbParams 

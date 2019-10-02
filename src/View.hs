@@ -4,6 +4,7 @@ module View
     ( homeRoute
     , writeRoute
     , tournoiRoute
+    , equipeRoute
     ) where
 
 import qualified Data.Text as T
@@ -21,6 +22,12 @@ homeRoute messages = renderText $ do
       h1_ "Mon blog sur Haskell"
       mapM_ formatMessage messages
       a_ [href_ "write"] "Écrire un message..."
+      br_ []
+      br_ []
+      a_ [href_ "tournois"] "Tournois"
+      br_ []
+      br_ []
+      a_ [href_ "equipes"] "Équipes"
   where formatMessage :: Model.Message -> Html ()
         formatMessage message = div_ $ do
           strong_ $ toHtml $ Model.title message
@@ -55,4 +62,16 @@ tournoiRoute tournois = renderText $ do
           strong_ $ toHtml $ ModelVolley.libelle tournoi
           toHtml $ T.concat [ " par ", ModelVolley.categorie tournoi ]
           div_ $ toHtml $ ModelVolley.date tournoi
+          br_ []
+
+equipeRoute :: [ModelVolley.Equipe] -> L.Text
+equipeRoute equipes = renderText $ do
+  doctype_
+  html_ $ body_ $ do
+      h1_ "Les équipes du tournoi de volley Haskell"
+      mapM_ formatEquipe equipes
+  where formatEquipe :: ModelVolley.Equipe -> Html ()
+        formatEquipe equipe = div_ $ do
+          toHtml $ T.concat [ T.pack $ show $ ModelVolley.id equipe, " - ", ModelVolley.nom equipe ]
+--          toHtml $ T.concat [ " - ", ModelVolley.nom equipe ]
           br_ []
