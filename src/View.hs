@@ -59,7 +59,7 @@ tournoiRoute tournois = renderText $ do
       --a_ [href_ "write"] "Écrire un message..."
   where formatTournoi :: ModelVolley.Tournoi -> Html ()
         formatTournoi tournoi = div_ $ do
-          strong_ $ toHtml $ ModelVolley.libelle tournoi
+          strong_ $ toHtml $ ModelVolley.libelleTournoi tournoi
           toHtml $ T.concat [ " par ", ModelVolley.categorie tournoi ]
           div_ $ toHtml $ ModelVolley.date tournoi
           br_ []
@@ -72,6 +72,6 @@ equipeRoute equipes = renderText $ do
       mapM_ formatEquipe equipes
   where formatEquipe :: ModelVolley.Equipe -> Html ()
         formatEquipe equipe = div_ $ do
-          toHtml $ T.concat [ T.pack $ show $ ModelVolley.id equipe, " - ", ModelVolley.nom equipe ]
+          toHtml $ T.concat [ T.pack $ show $ ModelVolley.idEquipe equipe, " - ", ModelVolley.nom equipe ]
 --          toHtml $ T.concat [ " - ", ModelVolley.nom equipe ]
           br_ []
