@@ -5,6 +5,7 @@ module View
     , writeRoute
     , tournoiRoute
     , equipeRoute
+    , matchRoute
     ) where
 
 import qualified Data.Text as T
@@ -28,6 +29,9 @@ homeRoute messages = renderText $ do
       br_ []
       br_ []
       a_ [href_ "equipes"] "Équipes"
+      br_ []
+      br_ []
+      a_ [href_ "matchs"] "Matchs"
   where formatMessage :: Model.Message -> Html ()
         formatMessage message = div_ $ do
           strong_ $ toHtml $ Model.title message
@@ -54,7 +58,7 @@ tournoiRoute :: [ModelVolley.Tournoi] -> L.Text
 tournoiRoute tournois = renderText $ do
   doctype_
   html_ $ body_ $ do
-      h1_ "Mon programme de tournoi de volleyblog sur Haskell"
+      h1_ "Mon programme de tournoi de volley"
       mapM_ formatTournoi tournois
       --a_ [href_ "write"] "Écrire un message..."
   where formatTournoi :: ModelVolley.Tournoi -> Html ()
@@ -74,4 +78,21 @@ equipeRoute equipes = renderText $ do
         formatEquipe equipe = div_ $ do
           toHtml $ T.concat [ T.pack $ show $ ModelVolley.idEquipe equipe, " - ", ModelVolley.nom equipe ]
 --          toHtml $ T.concat [ " - ", ModelVolley.nom equipe ]
+          br_ []
+
+matchRoute :: [ModelVolley.Match] -> L.Text
+matchRoute matchs = renderText $ do
+  doctype_
+  html_ $ body_ $ do
+      h1_ "Les matchs du tournoi de volley"
+      mapM_ formatMatch matchs
+  where formatMatch :: ModelVolley.Match -> Html ()
+        formatMatch match = div_ $ do
+          toHtml $ T.concat [ "Match : "
+                            , T.pack $ show $ ModelVolley.idEquipeMatch1 match
+                            , " contre "
+                            , T.pack $ show $ ModelVolley.idEquipeMatch2 match
+--                            , " - Arbitre : "
+--                            , T.pack $ show $ ModelVolley.idEquipeArbitreMatch match
+                            ]
           br_ []

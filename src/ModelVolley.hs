@@ -36,6 +36,8 @@ data Terrain = Terrain
 instance FromRow Terrain where
   fromRow = Terrain <$> field <*> field <*> field 
 
+terrainIndetermine :: Terrain
+terrainIndetermine = Terrain 0 1 "Terrain indetermine"
 
 data Phase = Phase
   { idPhase        :: Int
@@ -64,33 +66,31 @@ data TerrainsPoule = TerrainsPoule
   , idPhaseTerrainsPoule      :: Int 
   , idTerrainTerrainsPoule    :: Int 
   , idPouleTerrainsPoule      :: Int 
-  , libelleTp      :: T.Text
   }
 instance FromRow TerrainsPoule where
-  fromRow = TerrainsPoule <$> field <*> field <*> field <*> field <*> field <*> field
+  fromRow = TerrainsPoule <$> field <*> field <*> field <*> field <*> field 
 
 
-data EquipesTerrainsPoule = EquipesTerrainsPoule  
-  { idETP           :: Int 
-  , idTournoiETP    :: Int 
-  , idPhaseETP      :: Int 
-  , idTerrainETP    :: Int 
-  , idPouleETP      :: Int 
-  , idEquipeETP     :: Int 
-  , libelleETP      :: T.Text
+data EquipesPoule = EquipesPoule  
+  { idEP           :: Int 
+  , idTournoiEP    :: Int 
+  , idPhaseEP      :: Int 
+  , idPouleEP      :: Int 
+  , idEquipeEP     :: Int 
   }
-instance FromRow EquipesTerrainsPoule where
-  fromRow = EquipesTerrainsPoule <$> field <*> field <*> field <*> field <*> field <*> field <*> field
+instance FromRow EquipesPoule where
+  fromRow = EquipesPoule <$> field <*> field <*> field <*> field <*> field
 
 
-data Matchs = Matchs  
+data Match = Match  
   { idMatch           :: Int 
   , idTournoiMatch    :: Int 
   , idPhaseMatch      :: Int 
   , idTerrainMatch    :: Int 
   , idPouleMatch      :: Int 
-  , idEquipe1    :: Int 
-  , idEquipe2    :: Int 
+  , idEquipeMatch1    :: Int 
+  , idEquipeMatch2    :: Int 
+  , idEquipeArbitreMatch :: Int
   , pointsEquipe1  :: Int 
   , pointsEquipe2  :: Int 
   , setsEquipe1    :: Int 
@@ -99,8 +99,16 @@ data Matchs = Matchs
   , bEquipe1Vainqueur  :: Bool
   , bEquipe2Vainqueur  :: Bool
   }
-instance FromRow Matchs where
-  fromRow = Matchs <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field 
+instance FromRow Match where
+  fromRow = Match <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field 
+
+data SimpleMatch = SimpleMatch  
+  { idEquipe1    :: Int 
+  , idEquipe2    :: Int 
+  , idEquipeArbitre :: Int
+  }
+instance FromRow SimpleMatch where
+  fromRow = SimpleMatch <$> field <*> field <*> field  
 
 
 selectTournois :: String -> IO [Tournoi] 
@@ -113,7 +121,7 @@ selectTournois params = do
 insertTournoi :: String -> Tournoi -> IO ()
 insertTournoi params trn = do
     conn <- P.connectPostgreSQL $ B8.pack params
-    let rq="INSERT INTO tournoi (libelle_tournoi,categorie,date_tournoi, nb_terrains, nb_phases) VALUES (?,?,?,?,?)" 
+    let rq="INSERT INTO tournoi (libelle_tournoi,categorie,date_tournoi, nb_terrains, nb_phases) VALUES (?,?,?,1,1)" 
     P.execute conn rq (libelleTournoi trn, categorie trn, date trn)
     P.close conn
 
@@ -135,11 +143,73 @@ insertEquipe params eqp = do
 -- Ancien test
 --type DbTitle = (T.Text, T.Text)
 
---formatTitles :: [DbTitle] -> T.Text
---formatTitles = T.intercalate "<br/>\n" . map (\ (a, t) -> T.concat [a, " - ", t]) 
+--formatMatchs :: [Match] -> T.Text
+--formatMatchs = T.intercalate "<br/>\n" . map (\ (a, t) -> T.concat [a, " - ", t]) 
+
+
+--selectMatchs :: String -> Int -> Int -> Int -> IO [Match]
+----selectMatchs :: String -> String -> String -> String -> IO [Match]
+--selectMatchs params idtournoi idphase idpoule = do
+--    conn <- P.connectPostgreSQL $ B8.pack params
+--    --    let rq = "SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = ? and  matchs.id_phase = ? and  matchs.id_poule = ?"
+--    let rq = "SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = 100 and  matchs.id_phase = 1 and  matchs.id_poule = 1"
+----    let rq2 = "SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = 100 and  matchs.id_phase = 1 and  matchs.id_poule = ?"
+--    --    matchs <- P.query_ conn "SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = " ++ B8.pack (toString idtournoi) ++ " and  matchs.id_phase = " ++ B8.pack (toString idphase) ++ " and  matchs.id_poule = " ++ B8.pack (toString idpoule)   :: IO [Match]
+--    --    matchs <- P.query_ conn $ mconcat ["SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = ", toString idtournoi , " and  matchs.id_phase = ", (toString idphase) , " and  matchs.id_poule = " , (toString idpoule) ]  :: IO [Match]
+--    --    matchs <- P.query_ conn $ mconcat ["SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_tournoi = ? "  :: IO [Match]
+--    matchs <- P.query_ conn rq :: IO [Match]
+----    matchs <- P.query_ conn (rq2 idpoule) :: IO [Match]
+--  --    matchs <- P.query_ conn (rq (idtournoi, idphase, idpoule)) :: IO [Match]
+--    P.close conn
+--    return matchs
+----    return $ formatTitles titles
+
+
+
+--Retourne les matchs d'une poule, d'un tour, d'un tournoi donné.
+selectMatchs :: String -> Int -> Int -> Int -> IO [Match]
+selectMatchs params idtournoi idphase idpoule = do
+    conn <- P.connectPostgreSQL $ B8.pack params
+    let rq = "SELECT * FROM matchs WHERE matchs.id_tournoi = 100 and  matchs.id_phase = 1 and  matchs.id_poule = 1"
+    matchs <- P.query_ conn rq :: IO [Match]
+--    matchs <- P.query_ conn (rq2 idpoule) :: IO [Match]
+  --    matchs <- P.query_ conn (rq (idtournoi, idphase, idpoule)) :: IO [Match]
+    P.close conn
+    return matchs
 
 
 
 
+----Retourne les matchs d'une poule, d'un tour, d'un tournoi donné.
+--selectSimpleMatchs :: String -> Int -> IO [SimpleMatch]
+--selectSimpleMatchs params idpoule = do
+--    conn <- P.connectPostgreSQL $ B8.pack params
+--    let rq2 = "SELECT matchs.id_equipe_1 , matchs.id_equipe_2 , matchs.id_equipe_arbitre FROM matchs WHERE matchs.id_poule = ?"
+--    matchs <- P.query_ conn (rq2 idpoule) :: IO [SimpleMatch]
+--    P.close conn
+--    return matchs
+
+
+
+--insertMessage :: String -> Message -> IO ()
+--insertMessage params msg = do
+--    conn <- P.connectPostgreSQL $ B8.pack params
+--    let rq="INSERT INTO messages (author,title,body) VALUES (?,?,?)" 
+--    P.execute conn rq (author msg, title msg, body msg)
+--    P.close conn
+
+
+
+
+
+
+
+--selectMatchs :: String -> IO T.Text
+--selectMatchs params = do
+--    conn <- P.connectPostgreSQL $ B8.pack params
+--    titles <- P.query_ conn "SELECT artists.name, titles.name FROM artists \
+--                            \ INNER JOIN titles ON artists.id = titles.artist" :: IO [DbTitle]
+--    P.close conn
+--    return $ formatTitles titles
 
 

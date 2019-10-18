@@ -4,7 +4,7 @@
 DROP TABLE public.matchs;
 DROP TABLE public.poule;
 DROP TABLE public.terrains_poule;
-DROP TABLE public.equipes_terrain_poule;
+DROP TABLE public.equipes_poule;
 
 DROP TABLE public.phase;
 DROP TABLE public.terrain;
@@ -76,7 +76,7 @@ CREATE TABLE public.terrains_poule
     id_phase integer NOT NULL,
     id_terrain integer NOT NULL,
     id_poule integer NOT NULL,
-    libelle text COLLATE pg_catalog."default" NOT NULL,
+    --libelle text COLLATE pg_catalog."default" NOT NULL, --inutile
     CONSTRAINT terrains_poule_pkey PRIMARY KEY (id)
 );
 

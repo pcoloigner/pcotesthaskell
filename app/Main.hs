@@ -39,3 +39,7 @@ main = do
       get "/tournois" $ do
         tournois <- liftIO  $ ModelVolley.selectTournois dbParams 
         html $ View.tournoiRoute tournois
+
+      get "/matchs" $ do
+        matchs <- liftIO  $ ModelVolley.selectMatchs dbParams 100 1 1
+        html $ View.matchRoute matchs
